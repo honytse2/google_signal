@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Signals Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #4285F4;
+        }
+        .question {
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+        }
+        button {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #3367D6;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .correct {
+            color: #0F9D58;
+        }
+        .incorrect {
+            color: #DB4437;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Signals Quiz</h1>
+    <div id="quiz"></div>
+    <div id="result"></div>
+
+    <script>
+        const quizData = [
+            {
+                question: "What is Google Signals?",
+                options: [
+                    "A feature that allows cross-device tracking and reporting in Google Analytics",
+                    "A new search algorithm by Google",
+                    "A social media platform by Google",
+                    "A tool for sending signals to outer space"
+                ],
+                correct: 0,
+                explanation: "Google Signals is a feature that enables cross-device tracking and reporting in Google Analytics, allowing businesses to better understand user behavior across different devices."
+            },
+            {
+                question: "What does Google Signals require to function?",
+                options: [
+                    "Users must have a Google account",
+                    "Users must be signed in to their Google account",
+                    "Users must have enabled personalized advertising",
+                    "All of the above"
+                ],
+                correct: 3,
+                explanation: "Google Signals requires users to have a Google account, be signed in to that account, and have personalized advertising enabled for it to track their activity across devices."
+            },
+            {
+                question: "Which of the following is NOT a benefit of using Google Signals?",
+                options: [
+                    "Cross-device tracking",
+                    "Remarketing to signed-in users",
+                    "Demographic and interest reporting",
+                    "Ability to read users' private emails"
+                ],
+                correct: 3,
+                explanation: "Google Signals provides benefits like cross-device tracking, remarketing to signed-in users, and demographic reporting. It does not give access to users' private emails or any other personal information not related to web activity."
+            },
+            {
+                question: "How does Google Signals impact data retention?",
+                options: [
+                    "It has no impact on data retention",
+                    "It extends data retention indefinitely",
+                    "It limits data retention to 26 months",
+                    "It allows custom data retention periods"
+                ],
+                correct: 2,
+                explanation: "When Google Signals is activated, the data retention period for user-level data is set to 26 months. This cannot be changed and overrides any existing retention period settings."
+            },
+            {
+                question: "What type of data does Google Signals collect?",
+                options: [
+                    "Only desktop activity",
+                    "Only mobile activity",
+                    "Cross-device activity from signed-in users",
+                    "All internet activity, regardless of sign-in status"
+                ],
+                correct: 2,
+                explanation: "Google Signals collects cross-device activity data from users who are signed in to their Google accounts and have enabled personalized advertising. It does not collect data from users who are not signed in or have not enabled personalization."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const quizContainer = document.getElementById('quiz');
+            const currentQuizData = quizData[currentQuestion];
+
+            let quizHTML = `
+                <div class="question">
+                    <h2>Question ${currentQuestion + 1}/${quizData.length}</h2>
+                    <p>${currentQuizData.question}</p>
+                    <div class="options">
+                        ${currentQuizData.options.map((option, index) => `
+                            <button onclick="checkAnswer(${index})">${option}</button>
+                        `).join('')}
+                    </div>
+                    <div id="feedback"></div>
+                </div>
+            `;
+
+            quizContainer.innerHTML = quizHTML;
+        }
+
+        function checkAnswer(answerIndex) {
+            const currentQuizData = quizData[currentQuestion];
+            const feedbackElement = document.getElementById('feedback');
+
+            if (answerIndex === currentQuizData.correct) {
+                feedbackElement.innerHTML = `
+                    <p class="correct">Correct!</p>
+                    <p>${currentQuizData.explanation}</p>
+                `;
+                score++;
+            } else {
+                feedbackElement.innerHTML = `
+                    <p class="incorrect">Incorrect. The correct answer is: ${currentQuizData.options[currentQuizData.correct]}</p>
+                    <p>${currentQuizData.explanation}</p>
+                `;
+            }
+
+            // Disable all buttons after answering
+            const buttons = document.querySelectorAll('.options button');
+            buttons.forEach(button => button.disabled = true);
+
+            // Add a "Next" button or show results if it's the last question
+            if (currentQuestion < quizData.length - 1) {
+                feedbackElement.innerHTML += '<button onclick="nextQuestion()">Next Question</button>';
+            } else {
+                showResults();
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.getElementById('result');
+
+            quizContainer.style.display = 'none';
+            resultContainer.innerHTML = `
+                <h2>Quiz Completed!</h2>
+                <p>Your score: ${score}/${quizData.length}</p>
+                <p>${score === quizData.length ? 'Perfect score! You\'re a Google Signals expert!' : 'Great job! You\'ve learned a lot about Google Signals.'}}</p>
+                <button onclick="resetQuiz()">Retake Quiz</button>
+            `;
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('quiz').style.display = 'block';
+            document.getElementById('result').innerHTML = '';
+            loadQuestion();
+        }
+
+        // Start the quiz
+        loadQuestion();
+    </script>
+</body>
+</html>
